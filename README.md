@@ -25,11 +25,9 @@ A Streamlit dashboard is also provided for interactive threat group prediction.
 
 ---
 
-## Project Workflow
 
-<p align="center">
   <img src="Screenshot 2026-07-09 202413.png" width="900">
-</p>
+
 
 ---
 
@@ -57,6 +55,12 @@ A Streamlit dashboard is also provided for interactive threat group prediction.
 
 <p align="center">
   <img src="Screenshot 2026-07-09 202413.png" width="900">
+</p>
+
+### Dashboard
+
+<p align="center">
+   <img src="Screenshot 2026-07-09 202413.png" width="900">
 </p>
 
 ---
