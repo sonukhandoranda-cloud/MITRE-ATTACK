@@ -23,47 +23,17 @@ A Streamlit dashboard is also provided for interactive threat group prediction.
 - Interactive Streamlit Dashboard
 - Top-3 ranked predictions with confidence scores
 
----
+## 📸 Dashboard
+
+![Dashboard](Screenshot%202026-07-09%20202356.png)
+
+![Dashboard](Screenshot%202026-07-09%20202413.png)
+
+![Dashboard](Screenshot%202026-07-09%20203604.png)
+
+![Dashboard](Screenshot%202026-07-09%20203621.png)
 
 
-  <img src="Screenshot 2026-07-09 202413.png" width="900">
-
-
----
-
-## Dashboard
-
-### Dashboard
-
-<p align="center">
-  <img src="Screenshot 2026-07-09 202146.png" width="900">
-</p>
-
-### Dashboard
-
-<p align="center">
-  <img src="Screenshot 2026-07-09 202220.png" width="900">
-</p>
-
-### Dashboard
-
-<p align="center">
-  <img src="Screenshot 2026-07-09 202356.png" width="900">
-</p>
-
-### Dashboard
-
-<p align="center">
-  <img src="Screenshot 2026-07-09 202413.png" width="900">
-</p>
-
-### Dashboard
-
-<p align="center">
-   <img src="Screenshot 2026-07-09 202413.png" width="900">
-</p>
-
----
 
 ## Tech Stack
 
