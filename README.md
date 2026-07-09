@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project classifies cyber threat groups using the *MITRE ATT&CK BUNDLE STIX * dataset and Machine Learning techniques. The pipeline extracts behavioral features from ATT&CK techniques, handles class imbalance, trains multiple classifiers, performs hyperparameter optimization, and predicts the most likely threat groups.
+This project classifies cyber threat groups using the *MITRE ATT&CK STIX BUNDLE * dataset and Machine Learning techniques. The pipeline extracts behavioral features from ATT&CK techniques, handles class imbalance, trains multiple classifiers, performs hyperparameter optimization, and predicts the most likely threat groups.
 
 A Streamlit dashboard is also provided for interactive threat group prediction.
 
