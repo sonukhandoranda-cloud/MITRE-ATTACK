@@ -25,11 +25,11 @@ A Streamlit dashboard is also provided for interactive threat group prediction.
 
 ## 📸 Dashboard
 
-![Dashboard](Screenshot%202026-07-09%20202356.png)
+![Dashboard](Screenshot%202026-07-09%20203604.png)
 
 ![Dashboard](Screenshot%202026-07-09%20202413.png)
 
-![Dashboard](Screenshot%202026-07-09%20203604.png)
+![Dashboard](Screenshot%202026-07-09%20202356.png)
 
 ![Dashboard](Screenshot%202026-07-09%20203621.png)
 
