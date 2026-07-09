@@ -1,0 +1,14 @@
+{
+  "eval_method": "held_out_test_set",
+  "macro_precision": 0.9522604875283447,
+  "macro_recall": 0.9434523809523809,
+  "macro_f1": 0.9430883600526458,
+  "top3_accuracy": 0.9861111111111112,
+  "n_test_samples": 1008,
+  "n_classes_in_test": 168,
+  "n_failing_groups": 0,
+  "failing_groups": [],
+  "target_macro_f1": 0.62,
+  "target_top3_acc": 0.8,
+  "note": "0 single-sample classes excluded from test (train-only)"
+}

@@ -1,0 +1,23 @@
+{
+  "optuna_best_value": 0.9287,
+  "optuna_best_params": {
+    "xgb_n_est": 250,
+    "xgb_depth": 7,
+    "xgb_lr": 0.011661300819679149,
+    "xgb_sub": 0.5556499720505148,
+    "xgb_col": 0.7980506399839633,
+    "rf_n_est": 300,
+    "rf_depth": 29,
+    "rf_min_split": 2,
+    "w_xgb": 1,
+    "w_rf": 3
+  },
+  "n_trials": 60,
+  "smote_k": 2,
+  "test_size": 0.2,
+  "random_state": 42,
+  "n_classes": 168,
+  "n_features": 204,
+  "sanity_macro_f1": 0.9430883600526458,
+  "sanity_micro_f1": 0.9434523809523809
+}

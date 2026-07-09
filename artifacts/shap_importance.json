@@ -1,0 +1,202 @@
+[
+  {
+    "technique_id": "T1059",
+    "mean_abs_shap": 0.06523574888706207
+  },
+  {
+    "technique_id": "T1027",
+    "mean_abs_shap": 0.049547284841537476
+  },
+  {
+    "technique_id": "T1105",
+    "mean_abs_shap": 0.04376992583274841
+  },
+  {
+    "technique_id": "T1588",
+    "mean_abs_shap": 0.04131690785288811
+  },
+  {
+    "technique_id": "T1036",
+    "mean_abs_shap": 0.038246456533670425
+  },
+  {
+    "technique_id": "T1566",
+    "mean_abs_shap": 0.035328831523656845
+  },
+  {
+    "technique_id": "T1204",
+    "mean_abs_shap": 0.0338285006582737
+  },
+  {
+    "technique_id": "T1189",
+    "mean_abs_shap": 0.02909448929131031
+  },
+  {
+    "technique_id": "T1003",
+    "mean_abs_shap": 0.025110606104135513
+  },
+  {
+    "technique_id": "T1071",
+    "mean_abs_shap": 0.024648252874612808
+  },
+  {
+    "technique_id": "T1082",
+    "mean_abs_shap": 0.020894797518849373
+  },
+  {
+    "technique_id": "T1203",
+    "mean_abs_shap": 0.02077999711036682
+  },
+  {
+    "technique_id": "T1564",
+    "mean_abs_shap": 0.01983604207634926
+  },
+  {
+    "technique_id": "T1583",
+    "mean_abs_shap": 0.019733885303139687
+  },
+  {
+    "technique_id": "T1547",
+    "mean_abs_shap": 0.019731564447283745
+  },
+  {
+    "technique_id": "T1078",
+    "mean_abs_shap": 0.01923285983502865
+  },
+  {
+    "technique_id": "T1055",
+    "mean_abs_shap": 0.01880868524312973
+  },
+  {
+    "technique_id": "T1553",
+    "mean_abs_shap": 0.01805689185857773
+  },
+  {
+    "technique_id": "T1021",
+    "mean_abs_shap": 0.017845047637820244
+  },
+  {
+    "technique_id": "T1090",
+    "mean_abs_shap": 0.01764598861336708
+  },
+  {
+    "technique_id": "T1068",
+    "mean_abs_shap": 0.016602350398898125
+  },
+  {
+    "technique_id": "T1559",
+    "mean_abs_shap": 0.015939580276608467
+  },
+  {
+    "technique_id": "T1083",
+    "mean_abs_shap": 0.015927566215395927
+  },
+  {
+    "technique_id": "T1056",
+    "mean_abs_shap": 0.01582028903067112
+  },
+  {
+    "technique_id": "T1608",
+    "mean_abs_shap": 0.015788862481713295
+  },
+  {
+    "technique_id": "T1568",
+    "mean_abs_shap": 0.01547975279390812
+  },
+  {
+    "technique_id": "T1070",
+    "mean_abs_shap": 0.015257934108376503
+  },
+  {
+    "technique_id": "T1218",
+    "mean_abs_shap": 0.015244816429913044
+  },
+  {
+    "technique_id": "T1570",
+    "mean_abs_shap": 0.015191937796771526
+  },
+  {
+    "technique_id": "T1574",
+    "mean_abs_shap": 0.015127575956285
+  },
+  {
+    "technique_id": "T1005",
+    "mean_abs_shap": 0.015061220154166222
+  },
+  {
+    "technique_id": "T1053",
+    "mean_abs_shap": 0.015048296190798283
+  },
+  {
+    "technique_id": "T1219",
+    "mean_abs_shap": 0.014968880452215672
+  },
+  {
+    "technique_id": "T1584",
+    "mean_abs_shap": 0.014942831359803677
+  },
+  {
+    "technique_id": "T1102",
+    "mean_abs_shap": 0.01475883461534977
+  },
+  {
+    "technique_id": "T1546",
+    "mean_abs_shap": 0.014046238735318184
+  },
+  {
+    "technique_id": "T1133",
+    "mean_abs_shap": 0.014014482498168945
+  },
+  {
+    "technique_id": "T1518",
+    "mean_abs_shap": 0.013265911489725113
+  },
+  {
+    "technique_id": "T1012",
+    "mean_abs_shap": 0.013198554515838623
+  },
+  {
+    "technique_id": "T1057",
+    "mean_abs_shap": 0.013163039460778236
+  },
+  {
+    "technique_id": "T1016",
+    "mean_abs_shap": 0.013133975677192211
+  },
+  {
+    "technique_id": "T1046",
+    "mean_abs_shap": 0.013066810555756092
+  },
+  {
+    "technique_id": "T1555",
+    "mean_abs_shap": 0.013011708855628967
+  },
+  {
+    "technique_id": "T1586",
+    "mean_abs_shap": 0.013008218258619308
+  },
+  {
+    "technique_id": "T1585",
+    "mean_abs_shap": 0.012937496416270733
+  },
+  {
+    "technique_id": "T1571",
+    "mean_abs_shap": 0.0125885009765625
+  },
+  {
+    "technique_id": "T1110",
+    "mean_abs_shap": 0.012278526090085506
+  },
+  {
+    "technique_id": "T1106",
+    "mean_abs_shap": 0.01221503410488367
+  },
+  {
+    "technique_id": "T1095",
+    "mean_abs_shap": 0.01220432948321104
+  },
+  {
+    "technique_id": "T1113",
+    "mean_abs_shap": 0.012137937359511852
+  }
+]

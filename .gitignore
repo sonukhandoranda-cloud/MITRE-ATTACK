@@ -1,0 +1,5 @@
+checksums.txt
+.venv
+.env
+data/
+models/model.joblib
