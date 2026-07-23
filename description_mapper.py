@@ -1,31 +1,3 @@
-"""
-description_mapper.py  (v2 — fully data-driven, no hardcoded technique mappings)
-
-Maps a free-text incident description to MITRE ATT&CK technique IDs, using
-ONLY official MITRE data:
-
-  1. Technique corpus (name + description)        -> semantic similarity layer
-  2. Software/malware "uses" technique relationships -> alias/keyword layer
-     (e.g. "Mimikatz" -> whatever techniques MITRE's own STIX data says
-     Mimikatz implements, including all of MITRE's own listed aliases for
-     that tool — nothing hand-typed by a human)
-
-Pipeline:
-    user description
-        --(software-name alias match, sourced from MITRE relationships)-->
-        --(semantic similarity vs MITRE technique text)-->
-    technique IDs
-        --(existing, UNCHANGED predict_top3())-->
-    top-3 APT groups
-
-No model retraining required.
-
-Install (one-time):
-    pip install sentence-transformers requests --break-system-packages
-
-Run:
-    python description_mapper.py
-"""
 
 import json
 import pathlib
@@ -47,7 +19,7 @@ MITRE_ENTERPRISE_ATTACK_URL = (
 
 # Empirically-derived reliability floor from find_min_coverage.py — used
 # only to WARN the user, never to invent techniques.
-DEFAULT_MIN_RELIABLE_TECHNIQUES = 18
+DEFAULT_MIN_RELIABLE_TECHNIQUES = 20
 
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -105,18 +77,7 @@ def build_technique_corpus(bundle):
 # ─────────────────────────────────────────────────────────────────────────
 
 def build_software_alias_table(bundle, stix_id_to_tid):
-    """
-    Returns {lowercase_name_or_alias: {"techniques": [...], "group_usage_count": N}},
-    built purely from MITRE's own STIX objects:
-      - tool / malware objects supply the names + x_mitre_aliases
-      - relationship objects (relationship_type == "uses", software->technique)
-        supply which techniques each piece of software implements
-      - relationship objects (relationship_type == "uses", group->software)
-        supply group_usage_count: how many distinct APT groups are recorded
-        as using that software. This is MITRE's own data, used purely to
-        detect GENERIC/widely-shared tools (e.g. Cobalt Strike, Mimikatz)
-        which are not discriminative for attribution on their own.
-    """
+   
     cache_path = CACHE_DIR / "software_alias_table.json"
     if cache_path.exists():
         return json.loads(cache_path.read_text(encoding="utf-8"))
@@ -287,27 +248,7 @@ def map_description_to_techniques(
     description, corpus, alias_table, tids, technique_embeddings, model,
     idf_table=None, top_k=30, similarity_threshold=0.30,
 ):
-    """
-    Returns (technique_ids, match_details, coverage_warning_or_None).
-
-    Two matching layers, both sourced from MITRE's own data:
-      A) software-name alias match (e.g. "cobalt strike" mentioned in text ->
-         techniques MITRE's relationship data says it uses) — capped per
-         software and down-weighted if the tool is used by many unrelated
-         groups (generic/non-discriminative), using MITRE's own group-usage
-         counts, not a hand-typed list of "common tools."
-      B) semantic similarity between description sentences and MITRE's
-         own technique name+description text — guaranteed a minimum number
-         of result slots so tool mentions can't crowd it out entirely.
-
-    Both layers' scores are then re-weighted by idf_table (if provided) —
-    a discriminativeness score computed from the ACTUAL trained model's
-    groups (build_technique_idf()). Techniques that are rare/specific
-    among trained groups get a modest boost; techniques nearly every
-    group shares get a modest penalty. This nudges ranking toward
-    techniques that actually help distinguish groups, without changing
-    which techniques get matched in the first place.
-    """
+    
     idf_table = idf_table or {}
 
     def idf_multiplier(tid):
