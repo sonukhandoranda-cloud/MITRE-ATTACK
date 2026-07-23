@@ -32,78 +32,139 @@ def load_artifacts():
 
 eval_summary, feature_vocab, group_counts = load_artifacts()
 
+# ─── description-mapper pipeline (lazy-loaded only when that tab is used) ───
+@st.cache_resource(show_spinner=False)
+def load_description_pipeline():
+    from sentence_transformers import SentenceTransformer
+    from description_mapper import load_pipeline
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    corpus, alias_table, tids, technique_embeddings, idf_table = load_pipeline(model)
+    return model, corpus, alias_table, tids, technique_embeddings, idf_table
+
 # ─── APT group → country/region mapping ─────────────────────────────────────
 APT_COUNTRY = {
-    # Russia
+    # ── Russia ────────────────────────────────────────────────
     "APT28":"Russia","APT29":"Russia","Sandworm Team":"Russia","Turla":"Russia",
-    "Gamaredon Group":"Russia","HAFNIUM":"Russia","Cozy Bear":"Russia",
-    "Fancy Bear":"Russia","Ember Bear":"Russia","IRON TILDEN":"Russia",
-    "Dragonfly":"Russia","Energetic Bear":"Russia","Berserk Bear":"Russia",
-    # China
+    "Gamaredon Group":"Russia","Cozy Bear":"Russia","Fancy Bear":"Russia",
+    "Ember Bear":"Russia","IRON TILDEN":"Russia","Dragonfly":"Russia",
+    "Energetic Bear":"Russia","Berserk Bear":"Russia","TEMP.Veles":"Russia",
+    "Wizard Spider":"Russia","Indrik Spider":"Russia","Carbon Spider":"Russia",
+    "Primitive Bear":"Russia","Venomous Bear":"Russia","Gossamer Bear":"Russia",
+    "IRON VIKING":"Russia","Trickbot":"Russia","Ryuk":"Russia",
+    "Silence":"Russia","MoneyTaker":"Russia",
+    # ── China ─────────────────────────────────────────────────
     "APT1":"China","APT10":"China","APT17":"China","APT19":"China",
     "APT40":"China","APT41":"China","APT3":"China","APT30":"China",
     "Winnti Group":"China","BRONZE BUTLER":"China","Ke3chang":"China",
     "Leviathan":"China","Mustang Panda":"China","TA413":"China",
     "Threat Group-3390":"China","menuPass":"China","Deep Panda":"China",
-    "Elderwood":"China","GALLIUM":"China","TEMP.Veles":"Russia",
-    # North Korea
+    "Elderwood":"China","GALLIUM":"China","Wicked Panda":"China",
+    "Aquatic Panda":"China","Bronze President":"China","Calypso":"China",
+    "APT15":"China","APT31":"China","APT41":"China","Gothic Panda":"China",
+    "Judgment Panda":"China","Maverick Panda":"China","Numbered Panda":"China",
+    "Stone Panda":"China","Union Jack":"China","Vixen Panda":"China",
+    "HAFNIUM":"China","RedAlpha":"China","TA416":"China","RedDelta":"China",
+    "Lotus Panda":"China","Naikon":"China","Ke3chang":"China",
+    "UNC215":"China","UNC2630":"China","BackdoorDiplomacy":"China",
+    # ── North Korea ───────────────────────────────────────────
     "Lazarus Group":"North Korea","Kimsuky":"North Korea","APT37":"North Korea",
     "APT38":"North Korea","TEMP.Hermit":"North Korea","Andariel":"North Korea",
-    "BlueNoroff":"North Korea","DarkHotel":"North Korea",
-    # Iran
+    "BlueNoroff":"North Korea","DarkHotel":"North Korea","Ricochet Chollima":"North Korea",
+    "Labyrinth Chollima":"North Korea","Stardust Chollima":"North Korea",
+    "Silent Chollima":"North Korea","Velvet Chollima":"North Korea",
+    "Group 123":"North Korea","Reaper":"North Korea","ScarCruft":"North Korea",
+    "Temp.Reaper":"North Korea","UNC2970":"North Korea","TraderTraitor":"North Korea",
+    # ── Iran ──────────────────────────────────────────────────
     "APT33":"Iran","APT34":"Iran","APT35":"Iran","APT39":"Iran",
     "Charming Kitten":"Iran","MuddyWater":"Iran","OilRig":"Iran",
     "Magic Hound":"Iran","HEXANE":"Iran","Agrius":"Iran","Pioneer Kitten":"Iran",
-    # USA / Five Eyes (cybercriminal or state-adjacent)
+    "Cobalt Gypsy":"Iran","Cobalt Illusion":"Iran","Refined Kitten":"Iran",
+    "Helix Kitten":"Iran","Remix Kitten":"Iran","Static Kitten":"Iran",
+    "Tortoiseshell":"Iran","Fox Kitten":"Iran","Phosphorus":"Iran",
+    "CopyKittens":"Iran","Crambus":"Iran","Seedworm":"Iran",
+    "Volatile Cedar":"Lebanon","MERCURY":"Iran","DEV-0343":"Iran",
+    # ── USA / Five Eyes ───────────────────────────────────────
     "Equation Group":"USA","Longhorn":"USA","The Lamberts":"USA",
-    # Vietnam
+    "Tailored Access Operations":"USA","TAO":"USA","NOBUS":"USA",
+    # ── EU / Western cybercriminal (attributed to Eastern Europe/Russia often) ──
+    "FIN7":"Eastern Europe","FIN6":"Eastern Europe","FIN4":"Eastern Europe",
+    "Carbanak":"Eastern Europe","Cobalt Group":"Eastern Europe",
+    "TA505":"Eastern Europe","DarkHydrus":"Eastern Europe",
+    "Gorgon Group":"Eastern Europe","GOLD SOUTHFIELD":"Eastern Europe",
+    "GOLD DUPONT":"Eastern Europe","GOLD NIAGARA":"Eastern Europe",
+    "LUNAR SPIDER":"Eastern Europe","MUMMY SPIDER":"Eastern Europe",
+    "GRACEFUL SPIDER":"Eastern Europe","DAGGER PANDA":"Eastern Europe",
+    # ── Vietnam ───────────────────────────────────────────────
     "APT32":"Vietnam","OceanLotus":"Vietnam","APT-C-00":"Vietnam",
-    # Pakistan
+    "Canvas Cyclone":"Vietnam","Bismuth":"Vietnam",
+    # ── Pakistan ──────────────────────────────────────────────
     "Sidewinder":"Pakistan","Transparent Tribe":"Pakistan",
-    # India
-    "Donot Team":"India",
-    # Turkey
-    "Sea Turtle":"Turkey","PROMETHIUM":"Turkey",
-    # Lebanon
-    "Dark Caracal":"Lebanon",
-    # Gaza / Palestinian
+    "APT36":"Pakistan","ProjectM":"Pakistan","Mythic Leopard":"Pakistan",
+    # ── India ─────────────────────────────────────────────────
+    "Donot Team":"India","APT-C-35":"India","Viceroy Tiger":"India",
+    # ── Turkey ────────────────────────────────────────────────
+    "Sea Turtle":"Turkey","PROMETHIUM":"Turkey","StrongPity":"Turkey",
+    # ── Lebanon ───────────────────────────────────────────────
+    "Dark Caracal":"Lebanon","Lebanese Cedar":"Lebanon","Volatile Cedar":"Lebanon",
+    # ── Palestinian Territory ─────────────────────────────────
     "Gaza Cybergang":"Palestinian Territory","Molerats":"Palestinian Territory",
-    # Multiple / Unknown
-    "FIN7":"Unknown","FIN6":"Unknown","FIN4":"Unknown","Carbanak":"Unknown",
-    "Cobalt Group":"Unknown","TA505":"Unknown","Silence":"Unknown",
-    "DarkHydrus":"Unknown","Gorgon Group":"Unknown","CopyKittens":"Unknown",
+    "Arid Viper":"Palestinian Territory","Desert Falcon":"Palestinian Territory",
+    # ── Saudi Arabia / UAE ────────────────────────────────────
+    "Stealth Falcon":"UAE","Project Raven":"UAE",
+    # ── Belarus ───────────────────────────────────────────────
+    "UNC1151":"Belarus","Ghostwriter":"Belarus",
+    # ── Multiple / Unattributed ───────────────────────────────
+    "Unknown":"Unknown",
 }
 
 COUNTRY_COORDS = {
-    "Russia":               (61.52, 105.32),
-    "China":                (35.86, 104.19),
-    "North Korea":          (40.34, 127.51),
-    "Iran":                 (32.43, 53.69),
-    "USA":                  (37.09, -95.71),
-    "Vietnam":              (14.06, 108.28),
-    "Pakistan":             (30.38, 69.35),
-    "India":                (20.59, 78.96),
-    "Turkey":               (38.96, 35.24),
-    "Lebanon":              (33.85, 35.86),
-    "Palestinian Territory":(31.95, 35.23),
-    "Unknown":              (0.0,   0.0),
+    "Russia":                (61.52,  105.32),
+    "China":                 (35.86,  104.19),
+    "North Korea":           (40.34,  127.51),
+    "Iran":                  (32.43,   53.69),
+    "USA":                   (37.09,  -95.71),
+    "Vietnam":               (14.06,  108.28),
+    "Pakistan":              (30.38,   69.35),
+    "India":                 (20.59,   78.96),
+    "Turkey":                (38.96,   35.24),
+    "Lebanon":               (33.85,   35.86),
+    "Palestinian Territory": (31.95,   35.23),
+    "Eastern Europe":        (50.40,   30.52),   # Kyiv centroid
+    "UAE":                   (23.42,   53.85),
+    "Belarus":               (53.71,   27.95),
+    "Unknown":               (20.0,     0.0),
 }
 
 COUNTRY_COLOR = {
-    "Russia":"#E8451A","China":"#FF6B1A","North Korea":"#D84315",
-    "Iran":"#F4511E","USA":"#BF360C","Vietnam":"#FF7043",
-    "Pakistan":"#FFAB40","India":"#FFD180","Turkey":"#FF9800",
-    "Lebanon":"#FFB74D","Palestinian Territory":"#FFCC02","Unknown":"#555",
+    "Russia":                "#E8451A",
+    "China":                 "#FF6B1A",
+    "North Korea":           "#D84315",
+    "Iran":                  "#F4511E",
+    "USA":                   "#4FC3F7",   # blue — stands out from orange cluster
+    "Vietnam":               "#FF7043",
+    "Pakistan":              "#FFAB40",
+    "India":                 "#FFD180",
+    "Turkey":                "#FF9800",
+    "Lebanon":               "#FFB74D",
+    "Palestinian Territory": "#FFCC02",
+    "Eastern Europe":        "#CE93D8",   # purple — distinct from state actors
+    "UAE":                   "#80CBC4",
+    "Belarus":               "#EF9A9A",
+    "Unknown":               "#444",
 }
 
 PRESETS = {
-    "APT28 — Fancy Bear (Russia)":    ["T1059","T1078","T1566","T1053","T1027","T1105","T1036","T1016","T1057","T1083"],
-    "Lazarus Group (North Korea)":    ["T1059","T1003","T1071","T1041","T1105","T1547","T1055","T1070","T1140","T1486"],
-    "APT29 — Cozy Bear (Russia)":     ["T1078","T1566","T1027","T1036","T1071","T1090","T1102","T1560","T1048","T1070"],
-    "APT41 — Winnti (China)":         ["T1059","T1078","T1021","T1047","T1053","T1027","T1036","T1055","T1070","T1112"],
-    "MuddyWater (Iran)":              ["T1059","T1036","T1027","T1105","T1070","T1047","T1053","T1016","T1057","T1083"],
+    "APT28 — Fancy Bear (Russia)":   ['T1001', 'T1003', 'T1005', 'T1014', 'T1021', 'T1025', 'T1027', 'T1030', 'T1033', 'T1036', 'T1037', 'T1039', 'T1040', 'T1048', 'T1056', 'T1057', 'T1059', 'T1068', 'T1070', 'T1071', 'T1074', 'T1078', 'T1082', 'T1083', 'T1090', 'T1091', 'T1092', 'T1098', 'T1102', 'T1105', 'T1110', 'T1113', 'T1114', 'T1119', 'T1120', 'T1133', 'T1134', 'T1137', 'T1140', 'T1189', 'T1190', 'T1199', 'T1203', 'T1204', 'T1210', 'T1211', 'T1213', 'T1218', 'T1221', 'T1498', 'T1505', 'T1528', 'T1546', 'T1547', 'T1550', 'T1557', 'T1559', 'T1560', 'T1564', 'T1566', 'T1567', 'T1573', 'T1583', 'T1584', 'T1586', 'T1588', 'T1589', 'T1591', 'T1595', 'T1596', 'T1598', 'T1669', 'T1684', 'T1685'],
+    "Lazarus Group (North Korea)":     ['T1001', 'T1003', 'T1005', 'T1008', 'T1010', 'T1012', 'T1016', 'T1021', 'T1027', 'T1033', 'T1036', 'T1041', 'T1046', 'T1047', 'T1048', 'T1049', 'T1053', 'T1055', 'T1056', 'T1057', 'T1059', 'T1070', 'T1071', 'T1074', 'T1078', 'T1082', 'T1083', 'T1087', 'T1090', 'T1098', 'T1102', 'T1104', 'T1105', 'T1106', 'T1110', 'T1112', 'T1124', 'T1132', 'T1140', 'T1189', 'T1202', 'T1203', 'T1204', 'T1218', 'T1220', 'T1221', 'T1485', 'T1489', 'T1491', 'T1496', 'T1497', 'T1529', 'T1534', 'T1542', 'T1543', 'T1547', 'T1553', 'T1557', 'T1560', 'T1561', 'T1562', 'T1564', 'T1566', 'T1567', 'T1571', 'T1573', 'T1574', 'T1583', 'T1584', 'T1585', 'T1587', 'T1588', 'T1589', 'T1591', 'T1593', 'T1608', 'T1614', 'T1620', 'T1680', 'T1685', 'T1686'],
+    "APT29 — Cozy Bear (Russia)":   ['T1001', 'T1003', 'T1005', 'T1016', 'T1018', 'T1021', 'T1027', 'T1036', 'T1037', 'T1047', 'T1048', 'T1057', 'T1059', 'T1068', 'T1069', 'T1070', 'T1071', 'T1074', 'T1078', 'T1082', 'T1083', 'T1087', 'T1090', 'T1095', 'T1098', 'T1102', 'T1110', 'T1114', 'T1133', 'T1136', 'T1140', 'T1190', 'T1195', 'T1199', 'T1203', 'T1204', 'T1213', 'T1218', 'T1482', 'T1484', 'T1505', 'T1528', 'T1539', 'T1546', 'T1547', 'T1548', 'T1550', 'T1552', 'T1553', 'T1555', 'T1556', 'T1558', 'T1560', 'T1562', 'T1566', 'T1568', 'T1573', 'T1583', 'T1584', 'T1586', 'T1587', 'T1588', 'T1589', 'T1595', 'T1606', 'T1621', 'T1649', 'T1651', 'T1665', 'T1685'],
+    "APT41 — Winnti (China)":      ['T1003', 'T1005', 'T1008', 'T1012', 'T1016', 'T1018', 'T1021', 'T1027', 'T1030', 'T1033', 'T1036', 'T1037', 'T1046', 'T1047', 'T1049', 'T1053', 'T1055', 'T1056', 'T1059', 'T1069', 'T1070', 'T1071', 'T1078', 'T1082', 'T1083', 'T1087', 'T1090', 'T1098', 'T1102', 'T1104', 'T1105', 'T1110', 'T1112', 'T1133', 'T1135', 'T1136', 'T1190', 'T1195', 'T1197', 'T1203', 'T1213', 'T1218', 'T1480', 'T1484', 'T1486', 'T1496', 'T1542', 'T1543', 'T1546', 'T1547', 'T1550', 'T1553', 'T1555', 'T1560', 'T1562', 'T1566', 'T1568', 'T1569', 'T1570', 'T1574', 'T1588', 'T1589', 'T1595', 'T1596', 'T1599', 'T1684', 'T1685'],
+    "MuddyWater (Iran)":           ['T1003', 'T1016', 'T1027', 'T1033', 'T1036', 'T1041', 'T1047', 'T1049', 'T1053', 'T1057', 'T1059', 'T1071', 'T1074', 'T1082', 'T1083', 'T1087', 'T1090', 'T1102', 'T1104', 'T1105', 'T1113', 'T1132', 'T1137', 'T1140', 'T1190', 'T1203', 'T1204', 'T1210', 'T1218', 'T1219', 'T1518', 'T1534', 'T1547', 'T1548', 'T1552', 'T1555', 'T1559', 'T1560', 'T1562', 'T1566', 'T1567', 'T1571', 'T1573', 'T1574', 'T1583', 'T1588', 'T1589', 'T1590', 'T1684', 'T1685'],
     "Minimal incident — 2 techniques":["T1059","T1003"],
 }
+
+# empirical reliability floor from find_min_coverage.py sweep — used only
+# to show an honest confidence caveat, never to alter predictions
+MIN_RELIABLE_TECHNIQUES = 18
 
 RANK_COLORS = ["#FF6B1A","#FF9800","#FFAB40"]
 RANK_BG     = ["rgba(255,107,26,0.10)","rgba(255,152,0,0.08)","rgba(255,171,64,0.06)"]
@@ -282,6 +343,10 @@ details[open] .about-item summary::before { content:"▾"; }
     padding:14px 16px; font-size:13px;
     color:#8A7A6A; background:#111; line-height:1.7;
 }
+
+/* Mode toggle */
+div[data-testid="stRadio"] > label { display:none; }
+div[data-testid="stRadio"] > div { gap: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -297,9 +362,7 @@ with st.sidebar:
         </div>
     </div>
     """, unsafe_allow_html=True)
-    
 
-    
     st.markdown("""
 <div style='display:flex;flex-direction:column;gap:6px;'>
   <a href='/' target='_self' style='display:block;padding:8px 12px;border-radius:6px;
@@ -347,67 +410,97 @@ st.markdown(f"""
 # ─── WORLD MAP ───────────────────────────────────────────────────────────────
 st.markdown('<div class="sec-lbl"> Global Threat Actor Map</div>', unsafe_allow_html=True)
 
-# Build per-country aggregated data
+# ── resolve country for every group ──────────────────────────────────────────
+def resolve_country(grp_name):
+    # exact match first
+    if grp_name in APT_COUNTRY:
+        return APT_COUNTRY[grp_name]
+    # substring match (case-insensitive)
+    grp_lower = grp_name.lower()
+    for k, v in APT_COUNTRY.items():
+        if k.lower() in grp_lower or grp_lower in k.lower():
+            return v
+    return "Unknown"
+
+# Build per-country groups dict
 country_groups = {}
 for grp, cnt in group_counts.items():
-    country = next((APT_COUNTRY[k] for k in APT_COUNTRY if k.lower() in grp.lower()), None)
-    if not country:
-        country = APT_COUNTRY.get(grp, "Unknown")
-    if country not in country_groups:
-        country_groups[country] = []
-    country_groups[country].append((grp, cnt))
+    country = resolve_country(grp)
+    country_groups.setdefault(country, []).append((grp, cnt))
 
-# One scatter point per group
+# ── spiral jitter: spread groups within a country in a tight circle ───────────
+def spiral_positions(center_lat, center_lon, n, radius=4.5):
+    """Return n (lat, lon) positions spiralled around a centre."""
+    if n == 1:
+        return [(center_lat, center_lon)]
+    positions = []
+    for i in range(n):
+        angle  = 2 * np.pi * i / n
+        r      = radius * (0.4 + 0.6 * (i / max(n-1, 1)))
+        positions.append((
+            center_lat + r * np.cos(angle) * 0.7,
+            center_lon + r * np.sin(angle),
+        ))
+    return positions
+
+np.random.seed(42)  # deterministic layout
+
 lats, lons, texts, colors_list, sizes = [], [], [], [], []
-for grp, cnt in group_counts.items():
-    country = next((APT_COUNTRY[k] for k in APT_COUNTRY if k.lower() in grp.lower()), None)
-    if not country:
-        country = APT_COUNTRY.get(grp, "Unknown")
+
+for country, grps in country_groups.items():
     if country == "Unknown":
+        # Scatter unknown groups across the bottom of the map
+        for i, (grp, cnt) in enumerate(grps):
+            lats.append(-40 + np.random.uniform(-5, 5))
+            lons.append(-140 + i * (280 / max(len(grps), 1)) + np.random.uniform(-5, 5))
+            texts.append(f"<b>{grp}</b><br>Country: Unattributed<br>Techniques: {cnt}")
+            colors_list.append(COUNTRY_COLOR["Unknown"])
+            sizes.append(max(7, min(16, cnt // 4 + 6)))
         continue
-    coords = COUNTRY_COORDS.get(country, (0, 0))
-    # Jitter so overlapping groups are visible
-    jlat = coords[0] + np.random.uniform(-3, 3)
-    jlon = coords[1] + np.random.uniform(-3, 3)
-    lats.append(jlat)
-    lons.append(jlon)
-    texts.append(f"<b>{grp}</b><br>Country: {country}<br>Techniques: {cnt}")
-    colors_list.append(COUNTRY_COLOR.get(country, "#FF6B1A"))
-    sizes.append(max(8, min(22, cnt // 3 + 7)))
+
+    coords   = COUNTRY_COORDS.get(country, (0, 0))
+    positions = spiral_positions(coords[0], coords[1], len(grps))
+
+    for (grp, cnt), (jlat, jlon) in zip(grps, positions):
+        lats.append(jlat)
+        lons.append(jlon)
+        texts.append(
+            f"<b>{grp}</b><br>"
+            f"<span style='color:#FF6B1A'>Country:</span> {country}<br>"
+            f"<span style='color:#FF6B1A'>Techniques:</span> {cnt}"
+        )
+        colors_list.append(COUNTRY_COLOR.get(country, "#FF6B1A"))
+        sizes.append(max(8, min(24, cnt // 3 + 7)))
 
 fig_map = go.Figure()
 
-# Country cluster markers (large, semi-transparent)
+# ── country halo rings ────────────────────────────────────────────────────────
 for country, grps in country_groups.items():
     if country == "Unknown":
         continue
-    coords = COUNTRY_COORDS.get(country, (0, 0))
-    total_tech = sum(c for _, c in grps)
+    coords     = COUNTRY_COORDS.get(country, (0, 0))
+    n_grps     = len(grps)
+    halo_size  = max(22, min(55, n_grps * 9))
+    clr        = COUNTRY_COLOR.get(country, "#FF6B1A")
     fig_map.add_trace(go.Scattergeo(
         lat=[coords[0]], lon=[coords[1]],
         mode="markers+text",
-        marker=dict(
-            size=max(20, min(50, len(grps) * 8)),
-            color=COUNTRY_COLOR.get(country, "#FF6B1A"),
-            opacity=0.15,
-            line=dict(width=0),
-        ),
-        text=[country],
+        marker=dict(size=halo_size, color=clr, opacity=0.12, line=dict(width=0)),
+        text=[f"{country} ({n_grps})"],
         textposition="top center",
-        textfont=dict(size=10, color=COUNTRY_COLOR.get(country, "#FF6B1A"),
-                      family="IBM Plex Mono"),
+        textfont=dict(size=9, color=clr, family="IBM Plex Mono"),
         hoverinfo="skip",
         showlegend=False,
     ))
 
-# Individual group dots
+# ── individual group dots ─────────────────────────────────────────────────────
 fig_map.add_trace(go.Scattergeo(
     lat=lats, lon=lons,
     mode="markers",
     marker=dict(
         size=sizes,
         color=colors_list,
-        opacity=0.85,
+        opacity=0.88,
         line=dict(width=1, color="#0D0D0D"),
     ),
     text=texts,
@@ -436,78 +529,39 @@ fig_map.update_layout(
 st.plotly_chart(fig_map, use_container_width=True)
 
 # Legend
-legend_countries = [c for c in COUNTRY_COLOR if c != "Unknown"]
-legend_html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;">'
-for c in legend_countries:
-    col = COUNTRY_COLOR[c]
-    grp_count = len(country_groups.get(c, []))
-    if grp_count == 0:
-        continue
-    legend_html += f'<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A7A6A;font-family:IBM Plex Mono,monospace;"><span style="width:10px;height:10px;border-radius:50%;background:{col};display:inline-block;"></span>{c} ({grp_count})</div>'
+legend_entries = [
+    (c, COUNTRY_COLOR[c], len(country_groups.get(c, [])))
+    for c in COUNTRY_COLOR
+    if len(country_groups.get(c, [])) > 0
+]
+legend_entries.sort(key=lambda x: -x[2])  # sort by group count desc
+
+legend_html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">'
+for c, col, cnt in legend_entries:
+    legend_html += (
+        f'<div style="display:flex;align-items:center;gap:5px;font-size:11px;'
+        f'color:#8A7A6A;font-family:IBM Plex Mono,monospace;">'
+        f'<span style="width:10px;height:10px;border-radius:50%;background:{col};'
+        f'display:inline-block;flex-shrink:0;"></span>{c} ({cnt})</div>'
+    )
 legend_html += '</div>'
 st.markdown(legend_html, unsafe_allow_html=True)
 
 st.divider()
 
-# ─── ATTRIBUTION ─────────────────────────────────────────────────────────────
-col_left, col_right = st.columns([1, 1], gap="large")
+# ─── shared results renderer (used by BOTH input modes) ─────────────────────
+def render_results(results):
+    for r in results:
+        pct   = r["confidence"] * 100
+        color = RANK_COLORS[r["rank"]-1]
+        bg    = RANK_BG[r["rank"]-1]
+        medal = RANK_MEDALS[r["rank"]-1]
+        bar_w = int(r["confidence"] * 100)
+        country = next((APT_COUNTRY[k] for k in APT_COUNTRY
+                        if k.lower() in r["group"].lower()), "Unknown")
+        flag_note = f"&nbsp;·&nbsp;{country}" if country != "Unknown" else ""
 
-with col_left:
-    st.markdown('<div class="sec-lbl">Incident Technique IDs</div>', unsafe_allow_html=True)
-
-    default_text = ""
-    if preset_choice != "— enter manually —":
-        default_text = "\n".join(PRESETS[preset_choice])
-
-    raw_input = st.text_area(
-        "tids", value=default_text, height=200,
-        placeholder="T1059\nT1003\nT1566\nT1071\nT1027",
-        help="One ATT&CK technique ID per line. Sub-techniques (T1059.001) auto-collapsed.",
-        label_visibility="collapsed",
-    )
-
-    parsed = []
-    if raw_input.strip():
-        parsed = [t.strip().upper() for t in re.split(r"[\n,]+", raw_input) if t.strip()]
-
-    col_b, col_i = st.columns([2, 3])
-    with col_b:
-        run = st.button("Attribute →", type="primary", use_container_width=True)
-    with col_i:
-        st.caption(f"{len(parsed)} technique ID(s) entered" if parsed else "Enter technique IDs")
-
-    with st.expander("ℹ How to use"):
-        st.markdown("""
-**1.** Enter ATT&CK technique IDs from your incident  
-**2.** Click **Attribute →**  
-**3.** Review top-3 candidate threat groups with confidence scores
-
-Sub-technique IDs (e.g. `T1059.001`) are automatically collapsed to root (`T1059`).  
-Use the sidebar presets to explore known APT signatures.
-        """)
-
-with col_right:
-    st.markdown('<div class="sec-lbl">Attribution Results</div>', unsafe_allow_html=True)
-
-    if run:
-        if not parsed:
-            st.warning("Enter at least one technique ID.")
-        else:
-            with st.spinner("Running inference…"):
-                try:
-                    results = predict_top3(parsed)
-
-                    for r in results:
-                        pct   = r["confidence"] * 100
-                        color = RANK_COLORS[r["rank"]-1]
-                        bg    = RANK_BG[r["rank"]-1]
-                        medal = RANK_MEDALS[r["rank"]-1]
-                        bar_w = int(r["confidence"] * 100)
-                        country = next((APT_COUNTRY[k] for k in APT_COUNTRY
-                                        if k.lower() in r["group"].lower()), "Unknown")
-                        flag_note = f"&nbsp;·&nbsp;{country}" if country != "Unknown" else ""
-
-                        st.markdown(f"""
+        st.markdown(f"""
 <div class="rcard" style="border-color:{color};background:{bg};">
   <div class="rbadge">{medal} Rank #{r["rank"]}</div>
   <div class="rname">{r["group"]}<span style="font-size:12px;font-weight:400;color:#6A5A4A;">{flag_note}</span></div>
@@ -515,45 +569,177 @@ with col_right:
   <div class="rbar-bg"><div class="rbar-fill" style="width:{bar_w}%;background:{color};"></div></div>
 </div>""", unsafe_allow_html=True)
 
-                    # Confidence chart
-                    fig = go.Figure(go.Bar(
-                        x=[r["confidence"] for r in results],
-                        y=[r["group"] for r in results],
-                        orientation="h",
-                        marker_color=RANK_COLORS[:len(results)],
-                        text=[f"{r['confidence']:.4f}" for r in results],
-                        textposition="outside", cliponaxis=False,
-                    ))
-                    fig.update_layout(
-                        xaxis=dict(title="Confidence", range=[0, min(1.0, results[0]["confidence"]*1.4)],
-                                   gridcolor="#1E1E1E", color="#6A5A4A"),
-                        yaxis=dict(autorange="reversed", color="#6A5A4A"),
-                        height=200,
-                        margin=dict(l=0,r=60,t=4,b=30),
-                        plot_bgcolor="#111", paper_bgcolor="#111",
-                        font=dict(size=12, color="#E8E0D8"),
-                        showlegend=False,
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+    fig = go.Figure(go.Bar(
+        x=[r["confidence"] for r in results],
+        y=[r["group"] for r in results],
+        orientation="h",
+        marker_color=RANK_COLORS[:len(results)],
+        text=[f"{r['confidence']:.4f}" for r in results],
+        textposition="outside", cliponaxis=False,
+    ))
+    fig.update_layout(
+        xaxis=dict(title="Confidence", range=[0, min(1.0, results[0]["confidence"]*1.4)],
+                   gridcolor="#1E1E1E", color="#6A5A4A"),
+        yaxis=dict(autorange="reversed", color="#6A5A4A"),
+        height=200,
+        margin=dict(l=0,r=60,t=4,b=30),
+        plot_bgcolor="#111", paper_bgcolor="#111",
+        font=dict(size=12, color="#E8E0D8"),
+        showlegend=False,
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
-                    with st.expander("Matched / Unknown technique IDs"):
-                        matched_ids = [t.split(".")[0] if "." in t else t for t in parsed]
-                        known   = [t for t in matched_ids if t in feature_vocab]
-                        unknown = [t for t in parsed if (t.split(".")[0] if "." in t else t) not in feature_vocab]
-                        if known:
-                            st.success(f"**{len(known)} known:** {', '.join(sorted(set(known)))}")
-                        if unknown:
-                            st.warning(f"**{len(unknown)} skipped (not in vocab):** {', '.join(unknown)}")
 
+# ─── ATTRIBUTION ─────────────────────────────────────────────────────────────
+col_left, col_right = st.columns([1, 1], gap="large")
+
+parsed = []
+
+with col_left:
+    st.markdown('<div class="sec-lbl">Incident Input</div>', unsafe_allow_html=True)
+
+    input_mode = st.radio(
+        "input_mode",
+        ["Technique IDs", "Describe What Happened"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+
+    # ── shared state for whichever mode fires ──
+    run_results = None
+    run_error = None
+    mapped_details = None
+    coverage_warning = None
+
+    if input_mode == "Technique IDs":
+        default_text = ""
+        if preset_choice != "— enter manually —":
+            default_text = "\n".join(PRESETS[preset_choice])
+
+        raw_input = st.text_area(
+            "tids", value=default_text, height=200,
+            placeholder="T1059\nT1003\nT1566\nT1071\nT1027",
+            help="One ATT&CK technique ID per line. Sub-techniques (T1059.001) auto-collapsed.",
+            label_visibility="collapsed",
+        )
+
+        parsed = []
+        if raw_input.strip():
+            parsed = [t.strip().upper() for t in re.split(r"[\n,]+", raw_input) if t.strip()]
+
+        col_b, col_i = st.columns([2, 3])
+        with col_b:
+            run = st.button("Attribute →", type="primary", use_container_width=True)
+        with col_i:
+            st.caption(f"{len(parsed)} technique ID(s) entered" if parsed else "Enter technique IDs")
+
+        with st.expander("ℹ How to use"):
+            st.markdown("""
+**1.** Enter ATT&CK technique IDs from your incident (eg. from an EDR alert, SIEM rule, or threat intel report)
+**2.** Click **Attribute →**
+**3.** Review top-3 candidate threat groups with confidence scores
+
+Sub-technique IDs (e.g. `T1059.001`) are automatically collapsed to root (`T1059`).
+Use the sidebar presets to explore known APT signatures.
+            """)
+
+        if run:
+            if not parsed:
+                run_error = "empty"
+            else:
+                try:
+                    run_results = predict_top3(parsed)
+                    if len(parsed) < MIN_RELIABLE_TECHNIQUES:
+                        coverage_warning = (
+                            f"Only {len(parsed)} technique ID(s) provided — the model's "
+                            f"empirically-measured reliability floor is ~{MIN_RELIABLE_TECHNIQUES}. "
+                            f"Predictions on sparse input may be less reliable."
+                        )
                 except ValueError as e:
-                    st.error(str(e))
+                    run_error = str(e)
                 except Exception as e:
-                    st.error(f"Unexpected error: {e}")
+                    run_error = f"Unexpected error: {e}"
+
+    else:  # ── Describe What Happened ──
+        description_input = st.text_area(
+            "description", height=200,
+            placeholder=(
+                "Example: The attacker sent a spearphishing email with a malicious "
+                "attachment. Once opened, it ran an obfuscated PowerShell script that "
+                "used Mimikatz to dump credentials, then moved laterally via RDP and "
+                "established persistence through a scheduled task..."
+            ),
+            help="Describe the incident in plain language — tools, behaviors, and techniques observed. More technical detail improves accuracy.",
+            label_visibility="collapsed",
+        )
+
+        run = st.button("Analyze Description →", type="primary", use_container_width=True)
+
+        with st.expander("ℹ How to use"):
+            st.markdown(f"""
+**1.** Describe what happened — the tools used, how access was gained, persistence, C2 behavior, etc.
+**2.** Click **Analyze Description →**
+**3.** The description is mapped to MITRE ATT&CK technique IDs (via semantic matching against
+MITRE's own technique text, plus known tool/malware relationships from MITRE's data), then
+attributed to the top-3 candidate groups.
+
+The more specific technical detail you provide, the more reliable the result — the model's
+measured reliability floor is around **{MIN_RELIABLE_TECHNIQUES} techniques**; very short
+descriptions may map to fewer than that.
+            """)
+
+        if run:
+            if not description_input.strip():
+                run_error = "empty"
+            else:
+                try:
+                    with st.spinner("Loading NLP pipeline (first run only)…"):
+                        model, corpus, alias_table, tids, technique_embeddings, idf_table = load_description_pipeline()
+                    from description_mapper import attribute_from_description
+                    technique_ids, mapped_details, run_results, coverage_warning = attribute_from_description(
+                        description_input, corpus, alias_table, tids, technique_embeddings, model, idf_table=idf_table,
+                    )
+                except ValueError as e:
+                    run_error = str(e)
+                except Exception as e:
+                    run_error = f"Unexpected error: {e}"
+
+with col_right:
+    st.markdown('<div class="sec-lbl">Attribution Results</div>', unsafe_allow_html=True)
+
+    if run_error == "empty":
+        st.warning("Enter at least one technique ID." if input_mode == "Technique IDs"
+                    else "Enter a description of the incident.")
+    elif run_error:
+        st.error(run_error)
+    elif run_results:
+        if coverage_warning:
+            st.warning(coverage_warning)
+
+        render_results(run_results)
+
+        if mapped_details is not None:
+            with st.expander(f"Mapped technique IDs ({len(mapped_details)})"):
+                for m in mapped_details:
+                    st.markdown(
+                        f"**{m['technique_id']}** — {m['name']}  "
+                        f"<span style='color:#6A5A4A;font-size:11px;'>score={m['score']} · {m['reason']}</span>",
+                        unsafe_allow_html=True,
+                    )
+        else:
+            with st.expander("Matched / Unknown technique IDs"):
+                matched_ids = [t.split(".")[0] if "." in t else t for t in parsed]
+                known   = [t for t in matched_ids if t in feature_vocab]
+                unknown = [t for t in parsed if (t.split(".")[0] if "." in t else t) not in feature_vocab]
+                if known:
+                    st.success(f"**{len(known)} known:** {', '.join(sorted(set(known)))}")
+                if unknown:
+                    st.warning(f"**{len(unknown)} skipped (not in vocab):** {', '.join(unknown)}")
     else:
         st.markdown("""
 <div class="empty-state">
   <div style="font-size:36px;margin-bottom:10px;"></div>
-  <div style="font-size:14px;">Enter technique IDs and click <strong>Attribute →</strong></div>
+  <div style="font-size:14px;">Enter technique IDs or describe the incident, then click Attribute.</div>
   <div style="font-size:12px;margin-top:6px;opacity:.7;">Or load a preset from the sidebar</div>
 </div>""", unsafe_allow_html=True)
 
@@ -580,9 +766,21 @@ about_items = [
      "• <b>Shape:</b> (n_groups × n_techniques) CSR sparse matrix.<br>"
      "• <b>Sparsity:</b> >95% — most groups use a small fraction of all techniques."),
 
+    ("", "Description → Technique Mapping",
+     "The free-text input mode maps incident descriptions to ATT&CK technique IDs using two layers, "
+     "both sourced from MITRE's own data — no hand-typed technique mappings:<br><br>"
+     "• <b>Semantic matching:</b> a pretrained sentence-embedding model compares the description against "
+     "MITRE's own technique name + description text.<br>"
+     "• <b>Software/tool matching:</b> tool and malware names (e.g. Mimikatz, Cobalt Strike) mentioned in "
+     "the text are matched to techniques via MITRE's own STIX <code>software \"uses\" technique</code> "
+     "relationship data.<br><br>"
+     f"Results below ~{MIN_RELIABLE_TECHNIQUES} mapped techniques are flagged with a reliability caveat, "
+     "based on empirical testing of the minimum technique count needed for consistent attribution."),
+
     ("", "Known Limitations",
      "• Groups with fewer than 3 recorded techniques are excluded from training — too few signal points for reliable attribution.<br>"
      "• Single-sample classes (groups with only 1 training example after augmentation) never appear in the test set — metrics are computed only on verifiable classes.<br>"
+     "• The training augmentation keeps 75-100% of a group's techniques per sample — sparse real-world input (10-15 techniques) falls outside this range for large groups, which is why the reliability floor exists.<br>"
      "• False-flag contamination: attackers deliberately reuse other groups' tools. The model looks for <em>combinations</em> of techniques, but adversarial cross-contamination can lower confidence.<br>"
      "• The dataset reflects what the community has <em>publicly documented</em> — novel or low-profile groups are underrepresented."),
 
