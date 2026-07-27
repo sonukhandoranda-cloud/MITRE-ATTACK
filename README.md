@@ -46,11 +46,11 @@ Evaluated on a genuinely held-out, stratified 20% test split (never seen during 
 | Top-3 accuracy | ≥ 0.80 | **0.986** |
 | Macro Precision | — | 0.952 |
 | Macro Recall | — | 0.943 |
-| Inference latency (p99) | < 200 ms | ✅ met |
+| Inference latency (p99) | < 200 ms |  met |
 
 Dataset: **168** APT groups × **204** ATT&CK techniques → **5,040** samples (4,032 train / 1,008 test) after augmentation.
 
-> ⚠️ See [Testing & validation](#testing--validation) — a high held-out score alone doesn't prove real-world generalisation. This repo includes an explicit audit for that.
+>  See [Testing & validation](#testing--validation) — a high held-out score alone doesn't prove real-world generalisation. This repo includes an explicit audit for that.
 
 ## Architecture
 
@@ -214,4 +214,4 @@ python check_leakage.py
 
 ---
 
-*Developed by Jyoti Kumari (BTECH/10860/23), Dept. of ECE, BIT Mesra — Industrial Training at Central Coalfields Limited, under the guidance of Sri Digvijay Singh, Asst. Manager (E&T).*
+*Developed by Jyoti Kumari (BTECH/10860/23), Dept. of ECE, BIT Mesra — Industrial Training at Central Coalfields Limited, under the guidance of Sri Digvijay Singh, DY. Manager (E&T).*
