@@ -1,5 +1,11 @@
 # APT Group Attribution Engine
 
+**Live Site → [apt-attribution-engine-3ercpguq6nmlectyqrzrj5.streamlit.app](https://apt-attribution-engine-3ercpguq6nmlectyqrzrj5.streamlit.app/)**
+
+## Tech stack
+
+`scikit-learn` · `XGBoost` · `imbalanced-learn (SMOTE)` · `Optuna` · `SHAP` · `Streamlit` · `Plotly` · `pandas` / `NumPy` · `pytest`
+
 A machine-learning pipeline that attributes a cyber incident to the most likely **APT (Advanced Persistent Threat) group**, using only the [MITRE ATT&CK®](https://attack.mitre.org/) technique IDs observed during the incident.
 
 Given a list of technique IDs (e.g. `T1059`, `T1003`, `T1566`), the system returns the **top-3 most probable threat groups** with calibrated confidence scores — in under 200 ms — and exposes the whole thing through a Streamlit dashboard.
@@ -14,6 +20,22 @@ predict_top3(["T1059", "T1003", "T1566"])
 Built as part of Industrial Training at **Central Coalfields Limited (CCL)**, Darbhanga House, Ranchi.
 
 ---
+
+<div align="center">
+
+### Home Page
+<img src="public/home.png" alt="Home Page" width="90%" />
+
+### Model Performance
+<img src="public/performance.png" alt="Search" width="90%" />
+
+### Tech id---> attack group
+<img src="public/techid.png" alt="Playlist" width="90%" />
+
+### Description---> attack group [SolarWinds / APT29]
+<img src="public/description.png" alt="Chat" width="90%" />
+
+</div>
 
 ## Table of Contents
 
@@ -199,9 +221,6 @@ python check_leakage.py
 - [ ] Group-level (not row-level) train/test splitting to rule out leakage structurally
 - [ ] CI pipeline running `test_inference.py` as a regression gate before promoting a new model
 
-## Tech stack
-
-`scikit-learn` · `XGBoost` · `imbalanced-learn (SMOTE)` · `Optuna` · `SHAP` · `Streamlit` · `Plotly` · `pandas` / `NumPy` · `pytest`
 
 ## References
 

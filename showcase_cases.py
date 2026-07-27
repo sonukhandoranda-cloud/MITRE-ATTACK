@@ -1,20 +1,3 @@
-"""
-showcase_cases.py
-
-Generates REAL, verified "mature investigation" test cases for your CURRENT
-model — no retraining needed. These simulate a realistic scenario where an
-incident has been investigated over weeks/months (full EDR + forensic
-timeline), which genuinely does surface 30-80+ techniques in practice
-(e.g. Mandiant/CrowdStrike APT writeups) — as opposed to a single quick
-alert, which only shows 10-15.
-
-Every case here is pulled straight from your artifacts and verified with
-predict_top3() before being printed, so what you show your mentor is
-guaranteed to work — not guessed.
-
-Run:
-    python showcase_cases.py
-"""
 
 import pathlib
 import random
