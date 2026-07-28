@@ -34,17 +34,17 @@ Built as part of Industrial Training at **Central Coalfields Limited (CCL)**, Da
 
 <div align="center">
 
-### Home Page
-<img src="public/home.png" alt="Home Page" width="90%" />
+## Home Page
+![Home Page](Home.png)
 
-### Model Performance
-<img src="public/performance.png" alt="Search" width="90%" />
+## Model Performance
+![Model Performance](Model%20performance.png)
 
-### Tech id---> attack group
-<img src="public/techid.png" alt="Playlist" width="90%" />
+## Data Overview
+![Data Overview](Data%20Overview.png)
 
-### Description---> attack group [SolarWinds / APT29]
-<img src="public/description.png" alt="Chat" width="90%" />
+## Feature
+![Feature](feature.png)
 
 </div>
 
