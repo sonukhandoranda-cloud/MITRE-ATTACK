@@ -10,12 +10,12 @@ A machine-learning pipeline that attributes a cyber incident to the most likely 
 
 Given a list of technique IDs (e.g. `T1059`, `T1003`, `T1566`), the system returns the **top-3 most probable threat groups** with calibrated confidence scores — in under 200 ms — and exposes the whole thing through a Streamlit dashboard.
 
-```python
+<!-- ```python
 from inference import predict_top3
 
 predict_top3(["T1059", "T1003", "T1566"])
 # [{"rank": 1, "group": "APT28", "confidence": 0.847}, ...]
-```
+``` -->
 
 Built as part of Industrial Training at **Central Coalfields Limited (CCL)**, Darbhanga House, Ranchi.
 
@@ -187,7 +187,7 @@ Sub-technique IDs (e.g. `T1059.001`) are automatically collapsed to their root (
 - **Hyperparameter search**: Optuna's TPE sampler over XGBoost/Random Forest hyperparameters and ensemble voting weights.
 - **Explainability**: SHAP `TreeExplainer` on the XGBoost base estimator, ranking techniques by mean `|SHAP|` across all classes and test samples.
 
-## Testing & validation
+<!-- ## Testing & validation
 
 A high macro-F1 on a held-out split is a necessary but not sufficient condition for trusting this system on real, unseen incidents. Three independent checks are included:
 
@@ -204,14 +204,14 @@ pytest test_inference.py -v
 python check_leakage.py
 ```
 
-`check_leakage.py`'s output should be archived alongside `training_metadata.json` / `eval_summary.json` for every model version — it's treated as a required part of the evaluation, not an optional extra.
+`check_leakage.py`'s output should be archived alongside `training_metadata.json` / `eval_summary.json` for every model version — it's treated as a required part of the evaluation, not an optional extra. -->
 
 ## Known limitations
 
 - Groups with fewer than 3 documented techniques are excluded from training entirely.
 - **False-flag contamination**: real attackers reuse other groups' tools; the model can be misled by deliberate cross-contamination of TTPs.
 - The dataset reflects what's *publicly documented* at a point in time — novel or low-profile groups are underrepresented.
-- Input is technique IDs, not free text — a production analyst workflow needs a separate NLP extraction layer (not yet built; see Roadmap).
+<!-- - Input is technique IDs, not free text — a production analyst workflow needs a separate NLP extraction layer (not yet built; see Roadmap).
 
 ## Roadmap
 
@@ -220,7 +220,7 @@ python check_leakage.py
 - [ ] Full confidence-calibration / reliability-diagram analysis beyond top-3 accuracy
 - [ ] Group-level (not row-level) train/test splitting to rule out leakage structurally
 - [ ] CI pipeline running `test_inference.py` as a regression gate before promoting a new model
-
+ -->
 
 ## References
 
