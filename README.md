@@ -37,6 +37,9 @@ Built as part of Industrial Training at **Central Coalfields Limited (CCL)**, Da
 ## Home Page
 ![Home Page](Home.png)
 
+## Home Page
+![Home Page Top 3 groups](Home Page Top 3 Groups.png).
+
 ## Model Performance
 ![Model Performance](Model%20performance.png)
 
